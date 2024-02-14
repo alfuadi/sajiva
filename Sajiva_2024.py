@@ -1,13 +1,14 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import altair as alt
 import datetime
+import requests
+from io import StringIO
 
 # Function to filter data by date
-def filter_data_by_date(file_path, target_date):
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
+def filter_data_by_date(file_content, target_date):
+    lines = file_content.split('\n')
 
     filtered_data = []
     is_target_date = False
@@ -24,8 +25,8 @@ def filter_data_by_date(file_path, target_date):
     return filtered_data
 
 # Function to create DataFrame from filtered data
-def dataframemaker(file_path, target_date):
-    filtered_data = filter_data_by_date(file_path, target_date)
+def dataframemaker(file_content, target_date):
+    filtered_data = filter_data_by_date(file_content, target_date)
     split_data = [line.split() for line in filtered_data]
 
     empty_columns = [3, 4, 5, 6, 7, 8, 9, 10]
@@ -54,20 +55,15 @@ def plot_data(selvar, year, month, date):
     yearlist2 = [(dt + datetime.timedelta(days=n)).strftime('%Y') for n in range(7)]
     yearlist = yearlist1 + yearlist2
 
-    fig, ax = plt.subplots(figsize=(6, 8))
-    xmin, xmax = 0, 0
+    data = pd.DataFrame(columns=['Parameter', 'Pressure'])
     for yy, dateofdata, cols, tlag in zip(yearlist, datelist,
                                           ['#65018c', '#0a04b5', '#0546fa', '#0273e3', '#02ced1', '#05f293', '#3ee302',
                                            '#fafa02', '#e6c005', '#fcaa05', '#e37302', '#ff5703', '#e62102', '#f7027d'],
                                           [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]):
         try:
-            file_path0 = f'D:/Project/SajivaFiji/nffn/nffn_{caseyear}.out'
-            target_date0 = casedate
-            df0 = dataframemaker(file_path0, target_date0)
-
-            file_path = f'D:/Project/SajivaFiji/nffn/nffn_{yy}.out'
-            target_date = dateofdata
-            df = dataframemaker(file_path, target_date)
+            url = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{yy}.out'
+            file_content = requests.get(url).text
+            df = dataframemaker(file_content, dateofdata)
             if selvar == 1:
                 varname = 'Temperature'
                 param = 'TEMP'
@@ -104,39 +100,25 @@ def plot_data(selvar, year, month, date):
             else:
                 pass
 
-            ax.plot(df[param].astype(float), df['PRES'].astype(float), 'o-', color=cols, linewidth=2,
-                    label=f'D-({tlag})')
-            if xmin > df[param].astype(float).min():
-                xmin = xmin
-            else:
-                xmin = df[param].astype(float).min()
-            if xmax < df[param].astype(float).max():
-                xmax = xmax
-            else:
-                xmax = df[param].astype(float).max()
+            data = data.append(pd.DataFrame({'Parameter': [varname], 'Pressure': df['PRES'].astype(float)}))
         except:
             pass
 
-    if xmin > df0[param].astype(float).min():
-        xmin = xmin
-    else:
-        xmin = df0[param].astype(float).min()
-    if xmax < df0[param].astype(float).max():
-        xmax = xmax
-    else:
-        xmax = df0[param].astype(float).max()
+    data = data.append(pd.DataFrame({'Parameter': [varname], 'Pressure': df['PRES'].astype(float)}))
 
-    ax.plot(df0[param].astype(float), df0['PRES'].astype(float), 'o-', color='black', linewidth=2, zorder=30,
-            label=f'D-({0})')
-    plt.xlabel(varname)
-    plt.ylabel('Pressure (hPa)')
-    plt.title(f'Vertical Profile of {varname}')
-    plt.gca().invert_yaxis()
-    plt.grid(True)
-    plt.yticks([1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 100])
-    plt.legend()
-    plt.tight_layout()
-    st.pyplot(fig)
+    chart = alt.Chart(data).mark_circle().encode(
+        x=alt.X('Parameter:N', title='Parameter'),
+        y=alt.Y('Pressure:Q', title='Pressure (hPa)', scale=alt.Scale(zero=False)),
+        color=alt.Color('Parameter:N', legend=None)
+    ).properties(
+        width=600,
+        height=400
+    ).configure_axis(
+        labelFontSize=12,
+        titleFontSize=14
+    )
+
+    st.altair_chart(chart, use_container_width=True)
 
 # Streamlit app
 st.title('Vertical Profile Plotter')
