@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import altair as alt
+import matplotlib.pyplot as plt
 import datetime
 import requests
 from io import StringIO
@@ -43,23 +43,34 @@ def dataframemaker(file_content, target_date):
     return df2
 
 # Function to plot data
-def plot_data(selvar, year, month, date):
-    dt = datetime.datetime(year, month, date, 0)
-    casedate = dt.strftime('%HZ %d %b %Y')
-    caseyear = dt.strftime('%Y')
-    datelist1 = [(dt - datetime.timedelta(days=n)).strftime('%HZ %d %b %Y') for n in range(7)]
-    datelist2 = [(dt + datetime.timedelta(days=n)).strftime('%HZ %d %b %Y') for n in range(7)]
-    datelist = datelist1 + datelist2
+def plot_data(selvar, startdate, enddate):
+    casedate_list = []
+    while startdate <= enddate:
+        casedate_list.append(startdate)
+        startdate += datetime.timedelta(days=1)
 
-    yearlist1 = [(dt - datetime.timedelta(days=n)).strftime('%Y') for n in range(7)]
-    yearlist2 = [(dt + datetime.timedelta(days=n)).strftime('%Y') for n in range(7)]
+    casedatelist = [n.strftime('%HZ %d %b %Y') for n in casedate_list]
+    caseyearlist = [n.strftime('%Y') for n in casedate_list]
+    
+    datelist1 = [(casedate_list[0] - datetime.timedelta(days=n)).strftime('%HZ %d %b %Y') for n in range(1,8)]
+    datelist2 = [(casedate_list[-1] + datetime.timedelta(days=n)).strftime('%HZ %d %b %Y') for n in range(1,4)]
+    datelist = datelist1 + datelist2
+    print(datelist)
+
+    yearlist1 = [(casedate_list[0] - datetime.timedelta(days=n)).strftime('%Y') for n in range(1,8)]
+    yearlist2 = [(casedate_list[-1] + datetime.timedelta(days=n)).strftime('%Y') for n in range(1,4)]
     yearlist = yearlist1 + yearlist2
 
-    data = pd.DataFrame(columns=['Parameter', 'Pressure'])
+    fig, ax = plt.subplots(figsize=(6, 8))
+    xmin, xmax = 0, 0
+    
+    url_clim = 'https://raw.githubusercontent.com/alfuadi/sajiva/main/ClimSounding.csv'
+    clim = pd.read_csv(url_clim)
+    
     for yy, dateofdata, cols, tlag in zip(yearlist, datelist,
                                           ['#65018c', '#0a04b5', '#0546fa', '#0273e3', '#02ced1', '#05f293', '#3ee302',
                                            '#fafa02', '#e6c005', '#fcaa05', '#e37302', '#ff5703', '#e62102', '#f7027d'],
-                                          [-7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]):
+                                          ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '+1', '+2', '+3']):
         try:
             url = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{yy}.out'
             file_content = requests.get(url).text
@@ -100,25 +111,38 @@ def plot_data(selvar, year, month, date):
             else:
                 pass
 
-            data = data.append(pd.DataFrame({'Parameter': [varname], 'Pressure': df['PRES'].astype(float)}))
+            ax.plot(df[param].astype(float), df['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
+            ##ax.fill_betweenx(df['PRES'].astype(float), df[param].astype(float), color=cols, alpha=0.3)
+            if xmin > df[param].astype(float).min():
+                xmin = xmin
+            else:
+                xmin = df[param].astype(float).min()
+            if xmax < df[param].astype(float).max():
+                xmax = xmax
+            else:
+                xmax = df[param].astype(float).max()
+            print(dateofdata)
         except:
             pass
-
-    data = data.append(pd.DataFrame({'Parameter': [varname], 'Pressure': df['PRES'].astype(float)}))
-
-    chart = alt.Chart(data).mark_circle().encode(
-        x=alt.X('Parameter:N', title='Parameter'),
-        y=alt.Y('Pressure:Q', title='Pressure (hPa)', scale=alt.Scale(zero=False)),
-        color=alt.Color('Parameter:N', legend=None)
-    ).properties(
-        width=600,
-        height=400
-    ).configure_axis(
-        labelFontSize=12,
-        titleFontSize=14
-    )
-
-    st.altair_chart(chart, use_container_width=True)
+    
+    for y0, casedate,ndc in zip(caseyearlist, casedatelist, range(len(casedatelist))):
+        try:
+            url0 = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{y0}.out'
+            file_content = requests.get(url0).text
+            df = dataframemaker(file_content, casedate)
+            ax.plot(df[param].astype(float), df['PRES'].astype(float), color='k', linewidth=2, label=f'Case D({ndc})', zorder=20)
+        except:
+            pass
+    ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
+    plt.xlabel(varname)
+    plt.ylabel('Pressure (hPa)')
+    plt.title(f'Vertical Profile of {varname}')
+    plt.gca().invert_yaxis()
+    plt.grid(True)
+    plt.yticks([1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 100])
+    plt.legend()
+    plt.tight_layout()
+    st.pyplot(fig)
 
 # Streamlit app
 st.title('Vertical Profile Plotter')
@@ -136,8 +160,17 @@ param_dict = {'Temperature': 1, 'Dewpoint': 2, 'Frost Point': 3, 'RH': 4, 'RH re
 selvar_index = param_dict[selvar]
 
 # Date range selection
-start_date = st.date_input("Start date", datetime.date(2024, 1, 1))
-end_date = st.date_input("End date", datetime.date(2024, 1, 7))
+start_year = st.number_input("Start year", value=1992, min_value=1992)
+start_month = st.number_input("Start month", value=1, min_value=1, max_value=12)
+start_day = st.number_input("Start day", value=1, min_value=1, max_value=31)
+
+end_year = st.number_input("End year", value=datetime.datetime.now().year, min_value=1992)
+end_month = st.number_input("End month", value=datetime.datetime.now().month, min_value=1, max_value=12)
+end_day = st.number_input("End day", value=datetime.datetime.now().day, min_value=1, max_value=31)
+
+start_date = datetime.date(start_year, start_month, start_day)
+end_date = datetime.date(end_year,end_month,end_day)
 
 if st.button('Plot'):
-    plot_data(selvar_index, start_date.year, start_date.month, start_date.day)
+    print('=======================================')
+    plot_data(selvar_index, start_date, end_date)
