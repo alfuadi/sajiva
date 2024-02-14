@@ -1,0 +1,10 @@
+streamlit
+pandas==2.1.4
+requests
+streamlit_folium
+branca
+numpy
+folium
+matplotlib
+streamlit-authenticator
+datetime
