@@ -138,11 +138,11 @@ def plot_data(selvar, startdate, enddate):
             else:
                 pass
     
-            rows_to_drop1 = []
-            for i in range(1, len(df) - 2):
-                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 20:
-                    rows_to_drop1.append(i)
-            df = df.drop(index=rows_to_drop1).reset_index(drop=True)
+            # rows_to_drop1 = []
+            # for i in range(1, len(df) - 2):
+            #     if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 20:
+            #         rows_to_drop1.append(i)
+            # df = df.drop(index=rows_to_drop1).reset_index(drop=True)
             
             ax.plot(df[param].astype(float), df['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
             ##ax.fill_betweenx(df['PRES'].astype(float), df[param].astype(float), color=cols, alpha=0.3)
@@ -179,11 +179,11 @@ def plot_data(selvar, startdate, enddate):
     dave[['PRES','HGHT','TEMP','DWPT','FRPT','RELH','RELI','MIXR','DRCT','SKNT','THTA','THTE','THTV']] = dave[['PRES','HGHT','TEMP','DWPT','FRPT','RELH','RELI','MIXR','DRCT','SKNT','THTA','THTE','THTV']].apply(pd.to_numeric, errors='coerce')
     dave = dave.groupby('PRES').mean().reset_index()
 
-    rows_to_drop2 = []
-    for i in range(1, len(df) - 2):
-        if abs(float(dave[param].iloc[i])  - float(dave[param].iloc[i+1]))/abs(float(dave[param].iloc[i+1])  - float(dave[param].iloc[i+2])) > 10:
-            rows_to_drop2.append(i)
-    dave = dave.drop(index=rows_to_drop1).reset_index(drop=True)
+    # rows_to_drop2 = []
+    # for i in range(1, len(df) - 2):
+    #     if abs(float(dave[param].iloc[i])  - float(dave[param].iloc[i+1]))/abs(float(dave[param].iloc[i+1])  - float(dave[param].iloc[i+2])) > 10:
+    #         rows_to_drop2.append(i)
+    # dave = dave.drop(index=rows_to_drop1).reset_index(drop=True)
             
     ax.plot(dave[param].astype(float), dave['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Ave. {ref_year}', zorder=1)
     plt.xlabel(varname)
