@@ -142,9 +142,9 @@ def plot_data(selvar, startdate, enddate):
             for i in range(1, len(df) - 2):
                 if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 20:
                     rows_to_drop1.append(i)
-            df_cleaned1 = df.drop(index=rows_to_drop1).reset_index(drop=True)
+            df = df.drop(index=rows_to_drop1).reset_index(drop=True)
             
-            ax.plot(df_cleaned1[param].astype(float), df_cleaned1['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
+            ax.plot(df[param].astype(float), df['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
             ##ax.fill_betweenx(df['PRES'].astype(float), df[param].astype(float), color=cols, alpha=0.3)
             if xmin > df[param].astype(float).min():
                 xmin = xmin
@@ -166,12 +166,12 @@ def plot_data(selvar, startdate, enddate):
             for i in range(1, len(df) - 2):
                 if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 20:
                     rows_to_drop.append(i)
-            df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
+            df = df.drop(index=rows_to_drop).reset_index(drop=True)
             
             if ndc < max(np.arange(len(casedatelist))):
-                ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
+                ax.plot(df[param].astype(float), df['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
             else:
-                ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label=f'During TC Event', zorder=20) 
+                ax.plot(df[param].astype(float), df['PRES'].astype(float), color='k', linewidth=2, label=f'During TC Event', zorder=20) 
         except:
             pass
     ##ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
@@ -181,7 +181,7 @@ def plot_data(selvar, startdate, enddate):
     ax.plot(dave[param].astype(float), dave['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Ave. {ref_year}', zorder=1)
     plt.xlabel(varname)
     plt.ylabel('Pressure (hPa)')
-    plt.title(f'Vertical Profile of {varname} during {start_date} - {end_date}')
+    plt.title(f'Vertical Profile of {varname} \n during {start_date} - {end_date}')
     plt.gca().invert_yaxis()
     plt.grid(True)
     plt.yticks([1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 100])
