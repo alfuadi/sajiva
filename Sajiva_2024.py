@@ -98,67 +98,64 @@ def plot_data(selvar, startdate, enddate):
                                           ['#65018c', '#0a04b5', '#0546fa', '#0273e3', '#02ced1', '#05f293', '#3ee302',
                                            '#fafa02', '#e6c005', '#fcaa05', '#e37302', '#ff5703', '#e62102', '#f7027d'],
                                           ['-1', '-2', '-3', '-4', '-5', '-6', '-7', '+1', '+2', '+3']):
-        try:
-            url = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{yy}.out'
-            file_content = requests.get(url).text
-            df = dataframemaker(file_content, dateofdata)
-            if selvar == 1:
-                varname = 'Temperature'
-                param = 'TEMP'
-            elif selvar == 2:
-                varname = 'Dewpoint'
-                param = 'DWPT'
-            elif selvar == 3:
-                varname = 'Frost Point'
-                param = 'FRPT'
-            elif selvar == 4:
-                varname = 'RH'
-                param = 'RELH'
-            elif selvar == 5:
-                varname = 'RH respect to Ice'
-                param = 'RELI'
-            elif selvar == 6:
-                varname = 'Mixing Ratio'
-                param = 'MIXR'
-            elif selvar == 7:
-                varname = 'Wind Direction'
-                param = 'DRCT'
-            elif selvar == 8:
-                varname = 'Wind Speed'
-                param = 'SKNT'
-            elif selvar == 9:
-                varname = 'Pot.Temp'
-                param = 'THTA'
-            elif selvar == 10:
-                varname = 'Equiv.Pot.Temp'
-                param = 'THTE'
-            elif selvar == 11:
-                varname = 'Virt.Pot.Temp'
-                param = 'THTV'
-            else:
-                pass
-
-            st.write(abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])))
-            rows_to_drop1 = []
-            for i in range(1, len(df) - 1):
-                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
-                    rows_to_drop1.append(i)
-            df_cleaned1 = df.drop(index=rows_to_drop1).reset_index(drop=True)
-            
-            ax.plot(df_cleaned1[param].astype(float), df_cleaned1['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
-            ##ax.fill_betweenx(df['PRES'].astype(float), df[param].astype(float), color=cols, alpha=0.3)
-            if xmin > df[param].astype(float).min():
-                xmin = xmin
-            else:
-                xmin = df[param].astype(float).min()
-            if xmax < df[param].astype(float).max():
-                xmax = xmax
-            else:
-                xmax = df[param].astype(float).max()
-            print(dateofdata)
-        except:
+        ##=====================================
+        url = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{yy}.out'
+        file_content = requests.get(url).text
+        df = dataframemaker(file_content, dateofdata)
+        if selvar == 1:
+            varname = 'Temperature'
+            param = 'TEMP'
+        elif selvar == 2:
+            varname = 'Dewpoint'
+            param = 'DWPT'
+        elif selvar == 3:
+            varname = 'Frost Point'
+            param = 'FRPT'
+        elif selvar == 4:
+            varname = 'RH'
+            param = 'RELH'
+        elif selvar == 5:
+            varname = 'RH respect to Ice'
+            param = 'RELI'
+        elif selvar == 6:
+            varname = 'Mixing Ratio'
+            param = 'MIXR'
+        elif selvar == 7:
+            varname = 'Wind Direction'
+            param = 'DRCT'
+        elif selvar == 8:
+            varname = 'Wind Speed'
+            param = 'SKNT'
+        elif selvar == 9:
+            varname = 'Pot.Temp'
+            param = 'THTA'
+        elif selvar == 10:
+            varname = 'Equiv.Pot.Temp'
+            param = 'THTE'
+        elif selvar == 11:
+            varname = 'Virt.Pot.Temp'
+            param = 'THTV'
+        else:
             pass
-    
+
+        st.write(abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])))
+        rows_to_drop1 = []
+        for i in range(1, len(df) - 1):
+            if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
+                rows_to_drop1.append(i)
+        df_cleaned1 = df.drop(index=rows_to_drop1).reset_index(drop=True)
+        
+        ax.plot(df_cleaned1[param].astype(float), df_cleaned1['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
+        ##ax.fill_betweenx(df['PRES'].astype(float), df[param].astype(float), color=cols, alpha=0.3)
+        if xmin > df[param].astype(float).min():
+            xmin = xmin
+        else:
+            xmin = df[param].astype(float).min()
+        if xmax < df[param].astype(float).max():
+            xmax = xmax
+        else:
+            xmax = df[param].astype(float).max()
+    ##=====================================
     for y0, casedate,ndc in zip(caseyearlist, casedatelist, range(len(casedatelist))):
         try:
             url0 = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{y0}.out'
