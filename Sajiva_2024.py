@@ -162,7 +162,7 @@ def plot_data(selvar, startdate, enddate):
         except:
             pass
     ##ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
-    dave = avemaker(file_content, ref_year)
+    dave = avemaker(file_content, str(ref_year))
     dave = dave.groupby('PRES')[param].mean()
     ax.plot(dave[param].astype(float), dave['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Ave', zorder=21)
     plt.xlabel(varname)
