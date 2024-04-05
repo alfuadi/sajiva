@@ -140,7 +140,7 @@ def plot_data(selvar, startdate, enddate):
 
         st.write(abs(float(df[param].iloc[0])  - float(df[param].iloc[0+1])))
         rows_to_drop1 = []
-        for i in range(1, len(df) - 1):
+        for i in range(1, len(df) - 2):
             if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
                 rows_to_drop1.append(i)
         df_cleaned1 = df.drop(index=rows_to_drop1).reset_index(drop=True)
@@ -163,7 +163,7 @@ def plot_data(selvar, startdate, enddate):
             df = dataframemaker(file_content, casedate)
 
             rows_to_drop = []
-            for i in range(1, len(df) - 1):
+            for i in range(1, len(df) - 2):
                 if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
                     rows_to_drop.append(i)
             df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
