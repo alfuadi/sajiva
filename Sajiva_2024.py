@@ -157,10 +157,10 @@ def plot_data(selvar, startdate, enddate):
         file_content = requests.get(url0).text
         df = dataframemaker(file_content, casedate)
         
+        st.write(df[param])
         rows_to_drop = []
         for i in range(1, len(df) - 1):
-            if abs(df[param].iloc[i-1]  - df[param].iloc[i+1])/abs(df[param].iloc[i]  - df[param].iloc[i-1]) > 0.1 or \
-               abs(df[param].iloc[i-1]  - df[param].iloc[i+1])/abs(df[param].iloc[i]  - df[param].iloc[i+1]) > 0.1:
+            if abs(df[param].iloc[i-1]  - df[param].iloc[i+1])/abs(df[param].iloc[i]  - df[param].iloc[i+1]) < 0.1:
                 rows_to_drop.append(i)
         df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
 
