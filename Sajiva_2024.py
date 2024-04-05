@@ -157,14 +157,13 @@ def plot_data(selvar, startdate, enddate):
         file_content = requests.get(url0).text
         df = dataframemaker(file_content, casedate)
         
-        threshold = 10 
         rows_to_drop = []
         for i in range(1, len(df) - 1):
-            if abs(df.at[i, param] - df.at[i - 1, param]) > threshold and \
-               abs(df.at[i, param] - df.at[i + 1, param]) > threshold:
+            if abs(df[param].iloc[i-1]  - df[param].iloc[i+1])/abs(df[param].iloc[i]  - df[param].iloc[i-1]) > 0.1 or \
+               abs(df[param].iloc[i-1]  - df[param].iloc[i+1])/abs(df[param].iloc[i]  - df[param].iloc[i+1]) > 0.1:
                 rows_to_drop.append(i)
         df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
-        st.write(df_cleaned)
+
         if ndc < max(np.arange(len(casedatelist))):
             ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
         else:
