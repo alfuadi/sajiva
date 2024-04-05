@@ -143,6 +143,7 @@ def plot_data(selvar, startdate, enddate):
                 if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
                     rows_to_drop1.append(i)
             df_cleaned1 = df.drop(index=rows_to_drop1).reset_index(drop=True)
+            st.write(rows_to_drop1)
             
             ax.plot(df_cleaned1[param].astype(float), df_cleaned1['PRES'].astype(float), color=cols, linewidth=2, label=f'D{tlag}', zorder=3)
             ##ax.fill_betweenx(df['PRES'].astype(float), df[param].astype(float), color=cols, alpha=0.3)
@@ -167,7 +168,8 @@ def plot_data(selvar, startdate, enddate):
                 if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
                     rows_to_drop.append(i)
             df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
-    
+            st.write(rows_to_drop)
+            
             if ndc < max(np.arange(len(casedatelist))):
                 ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
             else:
