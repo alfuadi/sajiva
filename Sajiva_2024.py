@@ -138,7 +138,6 @@ def plot_data(selvar, startdate, enddate):
             else:
                 pass
     
-            st.write(abs(float(df[param].iloc[0])  - float(df[param].iloc[0+1])))
             rows_to_drop1 = []
             for i in range(1, len(df) - 2):
                 if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
