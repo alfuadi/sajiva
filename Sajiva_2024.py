@@ -160,8 +160,8 @@ def plot_data(selvar, startdate, enddate):
         threshold = 10 
         rows_to_drop = []
         for i in range(1, len(df) - 1):
-            if abs(df.at[i, 'temperature'] - df.at[i - 1, 'temperature']) > threshold and \
-               abs(df.at[i, 'temperature'] - df.at[i + 1, 'temperature']) > threshold:
+            if abs(df.at[i, param] - df.at[i - 1, param]) > threshold and \
+               abs(df.at[i, param] - df.at[i + 1, param]) > threshold:
                 rows_to_drop.append(i)
         df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
         st.write(df_cleaned)
