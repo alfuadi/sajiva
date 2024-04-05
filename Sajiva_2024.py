@@ -162,11 +162,11 @@ def plot_data(selvar, startdate, enddate):
             file_content = requests.get(url0).text
             df = dataframemaker(file_content, casedate)
 
-            rows_to_drop = []
-            for i in range(1, len(df) - 2):
-                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 20:
-                    rows_to_drop.append(i)
-            df = df.drop(index=rows_to_drop).reset_index(drop=True)
+            # rows_to_drop = []
+            # for i in range(1, len(df) - 2):
+            #     if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 20:
+            #         rows_to_drop.append(i)
+            # df = df.drop(index=rows_to_drop).reset_index(drop=True)
             
             if ndc < max(np.arange(len(casedatelist))):
                 ax.plot(df[param].astype(float), df['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
@@ -181,7 +181,7 @@ def plot_data(selvar, startdate, enddate):
 
     rows_to_drop2 = []
     for i in range(1, len(df) - 2):
-        if abs(float(dave[param].iloc[i])  - float(dave[param].iloc[i+1]))/abs(float(dave[param].iloc[i+1])  - float(dave[param].iloc[i+2])) > 20:
+        if abs(float(dave[param].iloc[i])  - float(dave[param].iloc[i+1]))/abs(float(dave[param].iloc[i+1])  - float(dave[param].iloc[i+2])) > 10:
             rows_to_drop2.append(i)
     dave = dave.drop(index=rows_to_drop1).reset_index(drop=True)
             
