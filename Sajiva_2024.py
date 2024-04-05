@@ -83,8 +83,7 @@ def plot_data(selvar, startdate, enddate):
     datelist1 = [(casedate_list[0] - datetime.timedelta(days=n)).strftime('%HZ %d %b %Y') for n in range(1,8)]
     datelist2 = [(casedate_list[-1] + datetime.timedelta(days=n)).strftime('%HZ %d %b %Y') for n in range(1,4)]
     datelist = datelist1 + datelist2
-    print(datelist)
-
+    
     yearlist1 = [(casedate_list[0] - datetime.timedelta(days=n)).strftime('%Y') for n in range(1,8)]
     yearlist2 = [(casedate_list[-1] + datetime.timedelta(days=n)).strftime('%Y') for n in range(1,4)]
     yearlist = yearlist1 + yearlist2
@@ -163,8 +162,8 @@ def plot_data(selvar, startdate, enddate):
             pass
     ##ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
     dave = avemaker(file_content, str(ref_year))
-    st.write(dave)
     dave = dave.groupby('PRES').mean()
+    st.write(dave)
     ax.plot(dave[param].astype(float), dave['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Ave', zorder=21)
     plt.xlabel(varname)
     plt.ylabel('Pressure (hPa)')
