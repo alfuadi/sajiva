@@ -42,6 +42,34 @@ def dataframemaker(file_content, target_date):
     df2 = df.dropna()
     return df2
 
+def filter_data_by_year(file_content, target_year):
+    lines = file_content.split('\n')
+    filtered_data = []
+    is_target_year = False
+    for line in lines:
+        if target_year in line:
+            is_target_year = True
+        elif 'Observations at' in line:
+            is_target_year = False
+        if is_target_year:
+            filtered_data.append(line)
+    return filtered_data
+    
+def avemaker(file_content, target_year):
+    filtered_data = filter_data_by_year(file_content, target_year)
+    split_data = [line.split() for line in filtered_data]
+    empty_columns = [3, 4, 5, 6, 7, 8, 9, 10]
+    for row in split_data[5:]:
+        for col_index in empty_columns:
+            if len(row) <= col_index:
+                row.append(np.nan)
+    df = pd.DataFrame(split_data[5:], columns=split_data[2])
+    df = df.iloc[2:]
+    df = df.iloc[:-33]
+    df.reset_index(drop=True, inplace=True)
+    df2 = df.dropna()
+    return df2
+
 # Function to plot data
 def plot_data(selvar, startdate, enddate):
     casedate_list = []
@@ -130,10 +158,13 @@ def plot_data(selvar, startdate, enddate):
             url0 = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{y0}.out'
             file_content = requests.get(url0).text
             df = dataframemaker(file_content, casedate)
-            ax.plot(df[param].astype(float), df['PRES'].astype(float), color='k', linewidth=2, label=f'Case D({ndc})', zorder=20)
+            ax.plot(df[param].astype(float), df['PRES'].astype(float), color='k', linewidth=2, label=f'Case D({ndc})', zorder=20)            
         except:
             pass
-    ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
+    ##ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
+    dave = avemaker(file_content, ref_year)
+    dave = dave.groupby('PRES')[param].mean()
+    ax.plot(dave[param].astype(float), dave['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Ave', zorder=21)
     plt.xlabel(varname)
     plt.ylabel('Pressure (hPa)')
     plt.title(f'Vertical Profile of {varname}')
