@@ -157,10 +157,11 @@ def plot_data(selvar, startdate, enddate):
             url0 = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{y0}.out'
             file_content = requests.get(url0).text
             df = dataframemaker(file_content, casedate)
-            
+
             rows_to_drop = []
             for i in range(1, len(df) - 1):
-                if abs(float(df[param].iloc[i-1])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])) < 0.1:
+                if abs(float(df[param].iloc[i-1])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])) < 0.1 or \
+                abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2]))/abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])) < 0.1:
                     rows_to_drop.append(i)
             df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
     
