@@ -165,7 +165,7 @@ def plot_data(selvar, startdate, enddate):
                    abs(df.at[i, 'temperature'] - df.at[i + 1, 'temperature']) > threshold:
                     rows_to_drop.append(i)
             df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
-            
+            st.write(df_cleaned)
             if ndc < max(np.arange(len(casedatelist))):
                 ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
             else:
