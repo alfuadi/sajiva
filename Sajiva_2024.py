@@ -162,8 +162,7 @@ def plot_data(selvar, startdate, enddate):
             pass
     ##ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
     dave = avemaker(file_content, str(ref_year))
-    st.write(dave)
-    dave = pd.to_numeric(dave, errors='coerce')
+    dave[['PRES','HGHT','TEMP','DWPT','FRPT','RELH','RELI','MIXR','DRCT','SKNT','THTA','THTE','THTV']] = pd.to_numeric(dave[['PRES','HGHT','TEMP','DWPT','FRPT','RELH','RELI','MIXR','DRCT','SKNT','THTA','THTE','THTV']], errors='coerce')
     dave = dave.groupby('PRES').mean()
     ax.plot(dave[param].astype(float), dave['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Ave', zorder=21)
     plt.xlabel(varname)
