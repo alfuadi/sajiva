@@ -153,22 +153,23 @@ def plot_data(selvar, startdate, enddate):
             pass
     
     for y0, casedate,ndc in zip(caseyearlist, casedatelist, range(len(casedatelist))):
-        url0 = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{y0}.out'
-        file_content = requests.get(url0).text
-        df = dataframemaker(file_content, casedate)
-        
-        st.write(float(df[param].iloc[1]))
-        rows_to_drop = []
-        for i in range(1, len(df) - 1):
-            if abs(float(df[param].iloc[i-1])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])) < 0.1:
-                rows_to_drop.append(i)
-        df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
-
-        if ndc < max(np.arange(len(casedatelist))):
-            ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
-        else:
-            ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label=f'During TC Event', zorder=20) 
+        try:
+            url0 = f'https://raw.githubusercontent.com/alfuadi/sajiva/main/nffn/nffn_{y0}.out'
+            file_content = requests.get(url0).text
+            df = dataframemaker(file_content, casedate)
+            
+            rows_to_drop = []
+            for i in range(1, len(df) - 1):
+                if abs(float(df[param].iloc[i-1])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])) < 0.1:
+                    rows_to_drop.append(i)
+            df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
     
+            if ndc < max(np.arange(len(casedatelist))):
+                ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label='_nolegend_', zorder=20)            
+            else:
+                ax.plot(df_cleaned[param].astype(float), df_cleaned['PRES'].astype(float), color='k', linewidth=2, label=f'During TC Event', zorder=20) 
+        except:
+            pass
     ##ax.plot(clim[param].astype(float), clim['PRES'].astype(float), alpha=0.5, color='gray', marker='o', linestyle='dashed', linewidth=1, markersize=2, label=f'Clim', zorder=1)
     dave = avemaker(file_content, str(ref_year))
     dave[['PRES','HGHT','TEMP','DWPT','FRPT','RELH','RELI','MIXR','DRCT','SKNT','THTA','THTE','THTV']] = dave[['PRES','HGHT','TEMP','DWPT','FRPT','RELH','RELI','MIXR','DRCT','SKNT','THTA','THTE','THTV']].apply(pd.to_numeric, errors='coerce')
