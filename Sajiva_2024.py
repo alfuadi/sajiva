@@ -140,7 +140,7 @@ def plot_data(selvar, startdate, enddate):
 
             rows_to_drop1 = []
             for i in range(1, len(df) - 1):
-                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) < 10:
+                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
                     rows_to_drop1.append(i)
             df_cleaned1 = df.drop(index=rows_to_drop1).reset_index(drop=True)
             
@@ -166,7 +166,7 @@ def plot_data(selvar, startdate, enddate):
 
             rows_to_drop = []
             for i in range(1, len(df) - 1):
-                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) < 10:
+                if abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i+1])  - float(df[param].iloc[i+2])) > 10:
                     rows_to_drop.append(i)
             df_cleaned = df.drop(index=rows_to_drop).reset_index(drop=True)
     
