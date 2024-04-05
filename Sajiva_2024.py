@@ -160,14 +160,20 @@ param_dict = {'Temperature': 1, 'Dewpoint': 2, 'Frost Point': 3, 'RH': 4, 'RH re
 selvar_index = param_dict[selvar]
 
 # Date range selection
-start_year = st.number_input("Start year", value=1992, min_value=1992)
-start_month = st.number_input("Start month", value=1, min_value=1, max_value=12)
-start_day = st.number_input("Start day", value=1, min_value=1, max_value=31)
+col1, col2 = st.columns(2)
 
-end_year = st.number_input("End year", value=datetime.datetime.now().year, min_value=1992)
-end_month = st.number_input("End month", value=datetime.datetime.now().month, min_value=1, max_value=12)
-end_day = st.number_input("End day", value=datetime.datetime.now().day, min_value=1, max_value=31)
+# Input untuk tanggal mulai
+with col1:
+    start_year = st.number_input("Start year", value=1992, min_value=1992)
+    start_month = st.number_input("Start month", value=1, min_value=1, max_value=12)
+    start_day = st.number_input("Start day", value=1, min_value=1, max_value=31)
 
+# Input untuk tanggal berakhir
+with col2:
+    end_year = st.number_input("End year", value=datetime.datetime.now().year, min_value=1992)
+    end_month = st.number_input("End month", value=datetime.datetime.now().month, min_value=1, max_value=12)
+    end_day = st.number_input("End day", value=datetime.datetime.now().day, min_value=1, max_value=31)
+    
 start_date = datetime.date(start_year, start_month, start_day)
 end_date = datetime.date(end_year,end_month,end_day)
 
