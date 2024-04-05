@@ -157,7 +157,7 @@ def plot_data(selvar, startdate, enddate):
         file_content = requests.get(url0).text
         df = dataframemaker(file_content, casedate)
         
-        st.write(float(df[param].iloc[i])
+        st.write(float(df[param].iloc[i]))
         rows_to_drop = []
         for i in range(1, len(df) - 1):
             if abs(float(df[param].iloc[i-1])  - float(df[param].iloc[i+1]))/abs(float(df[param].iloc[i])  - float(df[param].iloc[i+1])) < 0.1:
